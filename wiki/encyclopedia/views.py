@@ -1,5 +1,6 @@
 from django.shortcuts import render
 import markdown
+from django.shortcuts import HttpResponseRedirect
 
 from . import util
 
@@ -30,11 +31,15 @@ def wiki(request, title):
         })
     
 def search(request):
-    if request.method == "POST":
-        entry_search = request
-        html_content = md_to_html(entry_search)
-        if html_content is not None:
-            return render(request, "encyclopedia/wiki.html", {
-                "title": entry_search,
-                "content": html_content
-            })
+    value = request.GET.get('q','')
+    if md_to_html(value) is not None:
+        return HttpResponseRedirect('/wiki/' + value)
+    else:
+        SubStrEntry = []
+        for entry in util.list_entries():
+            if value.upper() in entry.upper():
+                return render(request, "encyclopedia/search.html", {
+                    "entries": SubStrEntry,
+                    "search": True,
+                    "value":value
+                })
