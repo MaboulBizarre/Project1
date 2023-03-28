@@ -38,8 +38,10 @@ def search(request):
         SubStrEntry = []
         for entry in util.list_entries():
             if value.upper() in entry.upper():
+                SubStrEntry.append(entry)
+
                 return render(request, "encyclopedia/search.html", {
                     "entries": SubStrEntry,
                     "search": True,
-                    "value":value
+                    "value": value
                 })
