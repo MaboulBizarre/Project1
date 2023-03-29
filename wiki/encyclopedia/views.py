@@ -1,9 +1,15 @@
 from django.shortcuts import render
 import markdown
+from django.shortcuts import HttpResponse
 from django.shortcuts import HttpResponseRedirect
+from django import forms
 
 from . import util
 
+class NewPageForm(forms.Form):
+    title = forms.CharField(widget=forms.TextInput(attrs={'name':'title'}))
+    body = forms.CharField(widget=forms.Textarea(attrs={'name':'body',
+                                                        'style':'height: 3em'}))
 
 def md_to_html(title):
     content = util.get_entry(title)
@@ -22,7 +28,7 @@ def wiki(request, title):
     html_content = md_to_html(title)
     if html_content == None:
         return render(request, "encyclopedia/error.html", {
-            "message": "This page does not exist"
+            "message": "This page does not exist..."
         })
     else:
         return render(request, "encyclopedia/wiki.html", {
@@ -45,3 +51,12 @@ def search(request):
                     "search": True,
                     "value": value
                 })
+            else:
+                return render(request, "encyclopedia/error.html", {
+                    "message": "This page does not exist..."
+                })
+            
+def New_Page(request):
+    return render(request, "encyclopedia/New_Page.html", {
+        "form": NewPageForm()
+    })
